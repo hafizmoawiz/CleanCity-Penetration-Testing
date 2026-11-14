@@ -46,7 +46,7 @@ are distinguished from issues that were manually validated.
 Screenshots and testing evidence - Nikto scan output - Task 2 report
 
 **Task findings:**\
-[`Task 2 Vulnerability-Assessment/findings.md`](Task%202%20Vulnerability-Assessment/findings.md)
+[`Reports/findings.md`](Task%202%20--%20Vulnerability-Assessment/Reports/findings.md)
 
 ### Task 3 -- Security Hardening
 
@@ -84,13 +84,14 @@ CleanCity-Penetration-Testing/
 │   └── reports/
 │       └── final-report.md
 │
-├── Task 2 Vulnerability-Assessment/
+├── Task 2 -- Vulnerability-Assessment/
 │   ├── README.md
-│   ├── findings.md
+│   ├── Reports/
+│   │   └── findings.md
 │   ├── screenshots/
-│   └── reports/
+│   └── ...
 │
-└── Task 3 Hardening/
+└── Task 3 -- Hardening/
     ├── screenshots/
     ├── reports/
     └── ...
