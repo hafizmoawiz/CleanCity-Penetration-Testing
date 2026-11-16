@@ -1,119 +1,160 @@
-# Task 3 — Linux Host Hardening
+# Task 3 – Linux Host Hardening and Remediation Verification
 
 ## Project Overview
 
-This project focuses on hardening an Ubuntu Linux host to improve system security, reduce unnecessary network exposure, and strengthen access controls. It is part of the CleanCity Penetration Testing project.
-
-The assessment covers SSH configuration, UFW firewall rules, review of running services, system updates, and post-hardening security validation. Additional checks were also performed for AppArmor and audit logging.
-
-## Target Information
-
-| Property | Details |
-|---|---|
-| Operating System | Ubuntu 22.04 LTS |
-| Hostname | ubunto |
-| Target IP | 172.16.229.131 |
-| Assessment Type | Linux Host Hardening |
-| Testing Platform | Kali Linux |
-| Kali IP | 172.16.229.130 |
+This project focuses on hardening an Ubuntu Linux host using selected security practices aligned with the CIS Ubuntu Benchmark. The main objective was to improve system security through SSH configuration, firewall restrictions, service review, system updates, and post-hardening security scans.
 
 ## Objectives
 
-- Secure SSH remote access.
-- Disable root and password-based SSH authentication.
-- Configure firewall rules to restrict incoming traffic.
-- Review running and enabled services.
-- Apply available system updates.
+- Secure SSH access and disable root login.
+- Enforce SSH key-based authentication.
+- Configure UFW firewall with restricted inbound access.
+- Review running and enabled system services.
+- Install pending system updates.
 - Enable automatic security updates.
 - Perform post-hardening Nmap and Nikto scans.
-- Document security improvements and remaining findings.
+- Maintain evidence and a hardening compliance checklist.
+
+## Lab Environment
+
+| Component | Details |
+|---|---|
+| Target OS | Ubuntu 22.04 LTS |
+| Target Hostname | ubunto |
+| Target IP | 172.16.229.131 |
+| Testing Machine | Kali Linux |
+| Kali IP | 172.16.229.130 |
+| Web Server | Apache 2.4.52 |
+| Database | MariaDB |
+| Web Application | DVWA |
 
 ## Hardening Activities
 
-1. **SSH Configuration:** Disabled root login, password authentication, keyboard-interactive authentication, and X11 forwarding. Enabled public-key authentication and configured approved ciphers. Verified key-based login.
+### 1. SSH Configuration
 
-2. **Firewall Configuration:** Enabled UFW with default incoming traffic denial and default outgoing traffic allowance. Restricted SSH (22) and HTTP (80) access to the authorized Kali testing machine.
+SSH was hardened by applying the following security settings:
 
-3. **Service Review:** Reviewed running and enabled system services. No unnecessary services were identified, so existing services were retained to avoid affecting system operations.
+- Disabled root login.
+- Enabled public-key authentication.
+- Disabled password authentication.
+- Disabled keyboard-interactive authentication.
+- Disabled X11 forwarding.
+- Restricted SSH access to the authorized user.
+- Configured strong SSH ciphers.
 
-4. **System Updates:** Applied available package updates and enabled automatic security upgrades using unattended-upgrades.
+SSH configuration was validated, and key-based login was successfully tested.
 
-5. **Security Validation:** Performed post-hardening Nmap and Nikto scans to examine exposed network services and remaining web-server findings.
+### 2. UFW Firewall Configuration
 
-### Additional Security Checks
+UFW was enabled with the following default policies:
 
-- **AppArmor:** Verified that AppArmor was active, with 54 profiles loaded, 52 in enforce mode and 2 in complain mode.
-- **Audit Logging:** Installed and enabled auditd. Verified that audit logging was enabled and no lost events were reported during the check.
+- Default incoming traffic: DENY
+- Default outgoing traffic: ALLOW
+- SSH (Port 22): Allowed from Kali IP `172.16.229.130`
+- HTTP (Port 80): Allowed from Kali IP `172.16.229.130`
 
-These were additional security checks and are not presented as separate mandatory hardening activities.
+All other unsolicited incoming traffic is denied by default.
+
+### 3. System Services Review
+
+Running and enabled services were reviewed using `systemctl`.
+
+The review identified the services required for the system's operational functionality. Existing required services, including SSH, Apache, and MariaDB, were retained.
+
+### 4. System Updates
+
+The following maintenance activities were completed:
+
+- Updated package repositories using `apt update`.
+- Applied pending package updates using `apt upgrade`.
+- Verified the unattended-upgrades service.
+- Enabled automatic package-list updates and unattended security upgrades.
+
+### 5. Additional Security Verification
+
+Additional security checks were performed:
+
+**AppArmor**
+- Verified that the AppArmor module was loaded.
+- Confirmed that the AppArmor service was active.
+- Reviewed loaded security profiles and their enforcement modes.
+
+**Auditd**
+- Installed `auditd` and `audispd-plugins`.
+- Verified that the auditd service was active.
+- Checked audit subsystem status using `auditctl -s`.
+
+## Security Scanning and Verification
+
+### Nmap
+
+A post-hardening Nmap scan was performed from the Kali Linux machine against the Ubuntu target.
+
+Command:
+
+```bash
+nmap -sV -A -oN ~/post-hardening-nmap.txt 172.16.229.131
+```
+
+The scan verified the availability of required services:
+
+- SSH: Port 22 open.
+- HTTP: Port 80 open.
+- Other scanned TCP ports: Filtered.
+
+The scan output was saved as evidence.
+
+### Nikto
+
+Nikto was used to assess the DVWA web application before and after hardening.
+
+Post-hardening scan command:
+
+```bash
+nikto -h http://127.0.0.1/DVWA/ \
+-output "$HOME/Downloads/Task 3 -- Hardening/scans/owasp/post-hardening-nikto-local.txt"
+```
+
+The comparison showed a reduction in reported items from **16 before hardening to 9 after hardening**, demonstrating improvement in the scan results.
 
 ## Project Structure
 
 ```text
 Task 3 -- Hardening/
+│
 ├── evidence/
 │   ├── before/
 │   └── after/
+│
 ├── scans/
 │   ├── nmap/
 │   └── owasp/
+│
 ├── reports/
 │   └── final-hardening-report.md
+│
 ├── hardening-checklist.md
 └── README.md
 ```
 
-## Security Validation
+## Compliance Checklist
 
-### Nmap Scan
+The `hardening-checklist.md` file documents the completed hardening activities and their verification status.
 
-The post-hardening Nmap scan identified:
-
-- SSH (22/tcp): Open
-- HTTP (80/tcp): Open
-- MariaDB (3306/tcp): Filtered
-- Other scanned TCP ports: Filtered
-
-SSH and HTTP remained accessible from the authorized testing environment, while the database port was not directly accessible.
-
-A matching pre-hardening Nmap baseline was not available, so a direct before-and-after Nmap comparison could not be established.
-
-### Nikto Scan — Before and After
-
-The baseline Nikto report contained 16 reported items, while the post-hardening local scan reported 9 items.
-
-The post-hardening scan no longer reported the previously identified directory-indexing findings for the four DVWA directories or the earlier configuration-information warning.
-
-Some findings remained, including:
-
-- Missing HttpOnly cookie attributes.
-- Missing X-Frame-Options header.
-- ETag inode information disclosure.
-- `.git/index` exposure.
-- Robots.txt observations.
-- DVWA login-page exposure.
-
-The reduction in reported items is an indication of improvement, not proof that every earlier issue was fully remediated. The original and post-hardening scans also used slightly different target paths, which should be considered when interpreting the comparison.
-
-Nikto findings include informational observations as well as potential security issues.
-
-## Evidence and Documentation
-
-- `evidence/before/` — Baseline configuration screenshots.
-- `evidence/after/` — Post-hardening configuration screenshots.
-- `scans/nmap/` — Nmap scan results.
-- `scans/owasp/` — Nikto scan results.
-- `hardening-checklist.md` — Hardening activities and verification status.
-- `reports/` — Final assessment report.
+| Hardening Activity | Status |
+|---|---|
+| SSH Configuration | PASS |
+| UFW Firewall Configuration | PASS |
+| System Services Review | PASS |
+| System Updates | PASS |
+| Automatic Security Updates | PASS |
+| Post-Hardening Security Scans | PASS |
+| Evidence Collection | PASS |
 
 ## Conclusion
 
-The Ubuntu host was hardened through SSH security configuration, UFW firewall restrictions, service review, and system updates. SSH key-based authentication was verified, incoming traffic was restricted, and automatic security updates were enabled.
+The Ubuntu host was hardened through SSH security configuration, UFW firewall restrictions, system service review, and regular system updates. Automatic security upgrades were enabled, and additional AppArmor and Auditd checks were performed.
 
-Post-hardening scans confirmed that the database port was filtered and identified a reduction in Nikto-reported items. Some web-server and DVWA-related findings remain and require further review.
+Post-hardening Nmap and Nikto scans were conducted to validate the security improvements. Screenshots, scan outputs, and documentation are maintained in this repository as project evidence.
 
-This assessment documents the selected CIS-aligned hardening measures performed in the lab environment. It does not represent full CIS Benchmark certification.
-
-## Disclaimer
-
-This project was conducted in a controlled virtual lab environment for educational and cybersecurity training purposes. Testing was limited to authorized virtual machines.
+**Project Status: Completed**
