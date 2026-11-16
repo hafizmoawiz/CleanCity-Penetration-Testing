@@ -1,0 +1,25 @@
+# Nmap 7.99 scan initiated Mon Nov 16 14:35:43 2026 as: /usr/lib/nmap/nmap --privileged -sV -A -oN /home/analyzer/post-hardening-nmap.txt 172.16.229.131
+Nmap scan report for 172.16.229.131
+Host is up (0.00041s latency).
+Not shown: 998 filtered tcp ports (no-response)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.18 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 02:3f:79:fb:3c:14:0d:c8:5c:6e:4a:cc:0c:a2:e2:b0 (ECDSA)
+|_  256 ef:e8:6c:49:f6:64:bc:df:58:e2:72:9e:4e:dc:93:14 (ED25519)
+80/tcp open  http    Apache httpd 2.4.52 ((Ubuntu))
+|_http-title: Apache2 Ubuntu Default Page: It works
+|_http-server-header: Apache/2.4.52 (Ubuntu)
+MAC Address: 00:0C:29:D7:CB:FB (VMware)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Aggressive OS guesses: Linux 4.15 - 5.19 (97%), Linux 4.19 (97%), Linux 5.0 - 5.14 (97%), OpenWrt 21.02 (Linux 5.4) (97%), MikroTik RouterOS 7.2 - 7.5 (Linux 5.6.3) (97%), Linux 6.0 (94%), Linux 6.15 (94%), Linux 5.4 - 5.10 (91%), Linux 2.6.32 (91%), Linux 2.6.32 - 3.13 (91%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 1 hop
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.41 ms 172.16.229.131
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Mon Nov 16 14:36:04 2026 -- 1 IP address (1 host up) scanned in 21.11 seconds
